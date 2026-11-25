@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import {
   Mail,
   ExternalLink,
@@ -160,298 +163,369 @@ function SectionNumber({ n }: { n: string }) {
   );
 }
 
+function CursorGlow() {
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = glowRef.current;
+    if (!el) return;
+
+    let animId: number;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    function animate() {
+      currentX += (targetX - currentX) * 0.15;
+      currentY += (targetY - currentY) * 0.15;
+      if (el) {
+        el.style.background = `radial-gradient(600px circle at ${currentX}px ${currentY}px, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.02) 40%, transparent 70%)`;
+      }
+      animId = requestAnimationFrame(animate);
+    }
+
+    function onMouseMove(e: MouseEvent) {
+      targetX = e.clientX;
+      targetY = e.clientY + window.scrollY;
+    }
+
+    function onMouseLeave() {
+      if (el) {
+        el.style.background = "transparent";
+      }
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
+    animId = requestAnimationFrame(animate);
+
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={glowRef}
+      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
+      style={{ height: "100vh", width: "100vw" }}
+      aria-hidden="true"
+    />
+  );
+}
+
 export default function Home() {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 md:py-20">
-      {/* Nav */}
-      <nav className="flex items-center justify-between mb-24 md:mb-32">
-        <span className="text-sm font-medium tracking-tight">CeeJay</span>
-        <div className="flex items-center gap-6 text-sm text-[var(--muted)]">
-          {NAV_LINKS.map((l) => (
+    <>
+      <CursorGlow />
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20">
+        {/* Nav */}
+        <nav className="flex items-center justify-between mb-24 md:mb-32">
+          <span className="text-sm font-medium tracking-tight">CeeJay</span>
+          <div className="flex items-center gap-6 text-sm text-[var(--muted)]">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="hover:text-[var(--foreground)] transition-colors hidden sm:block"
+              >
+                {l.label}
+              </a>
+            ))}
             <a
-              key={l.href}
-              href={l.href}
-              className="hover:text-[var(--foreground)] transition-colors hidden sm:block"
+              href="https://github.com/CeeJay1241"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[var(--foreground)] transition-colors"
             >
-              {l.label}
+              <GithubIcon size={16} />
             </a>
-          ))}
-          <a
-            href="https://github.com/CeeJay1241"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--foreground)] transition-colors"
-          >
-            <GithubIcon size={16} />
-          </a>
-          <a
-            href="https://linkedin.com/in/chijioke-alim"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--foreground)] transition-colors"
-          >
-            <LinkedinIcon size={16} />
-          </a>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <header className="mb-28 md:mb-36">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-          Chijioke Alim
-        </h1>
-        <p className="text-lg md:text-xl text-[var(--muted)] max-w-2xl leading-relaxed mb-8">
-          Computer Science student at Howard University. I build
-          production-ready systems in applied AI, full-stack development, and
-          machine learning. Turning research into software people actually use.
-        </p>
-        <div className="flex items-center gap-4 text-sm">
-          <a
-            href="#projects"
-            className="bg-[var(--accent)] hover:bg-[var(--accent-light)] text-white px-5 py-2.5 rounded-md font-medium transition-colors inline-flex items-center gap-2"
-          >
-            View projects <ChevronRight size={14} />
-          </a>
-          <a
-            href="/Chijioke_Alim_Resume.pdf"
-            target="_blank"
-            className="border border-[var(--border)] hover:border-[var(--muted)] text-[var(--muted)] hover:text-[var(--foreground)] px-5 py-2.5 rounded-md font-medium transition-colors"
-          >
-            Resume
-          </a>
-        </div>
-      </header>
-
-      {/* Projects */}
-      <section id="projects" className="mb-28 md:mb-36 scroll-mt-20">
-        <div className="flex items-end gap-6 mb-12">
-          <SectionNumber n="01" />
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Selected work from coursework, hackathons, and independent builds.
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {PROJECTS.map((p) => (
-            <div
-              key={p.title}
-              className="group border border-[var(--border)] rounded-lg p-6 hover:border-[var(--muted)] transition-colors bg-[var(--card)] hover:bg-[var(--card-hover)]"
+            <a
+              href="https://linkedin.com/in/chijioke-alim"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[var(--foreground)] transition-colors"
             >
-              <div className="flex items-start justify-between mb-3">
+              <LinkedinIcon size={16} />
+            </a>
+          </div>
+        </nav>
+
+        {/* Hero */}
+        <header className="mb-28 md:mb-36">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+            Chijioke Alim
+          </h1>
+          <p className="text-lg md:text-xl text-[var(--muted)] max-w-2xl leading-relaxed mb-8">
+            Computer Science student at Howard University. I build
+            production-ready systems in applied AI, full-stack development, and
+            machine learning. Turning research into software people actually use.
+          </p>
+          <div className="flex items-center gap-4 text-sm">
+            <a
+              href="#projects"
+              className="bg-[var(--accent)] hover:bg-[var(--accent-light)] text-white px-5 py-2.5 rounded-md font-medium transition-colors inline-flex items-center gap-2"
+            >
+              View projects <ChevronRight size={14} />
+            </a>
+            <a
+              href="/Chijioke_Alim_Resume.pdf"
+              target="_blank"
+              className="border border-[var(--border)] hover:border-[var(--muted)] text-[var(--muted)] hover:text-[var(--foreground)] px-5 py-2.5 rounded-md font-medium transition-colors"
+            >
+              Resume
+            </a>
+          </div>
+        </header>
+
+        {/* Projects */}
+        <section id="projects" className="mb-28 md:mb-36 scroll-mt-20">
+          <div className="flex items-end gap-6 mb-12">
+            <SectionNumber n="01" />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Selected work from coursework, hackathons, and independent builds.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {PROJECTS.map((p) => {
+              const cardHref = p.href || p.github;
+              return (
+                <a
+                  key={p.title}
+                  href={cardHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block border border-[var(--border)] rounded-lg p-6 hover:border-[var(--muted)] transition-colors bg-[var(--card)] hover:bg-[var(--card-hover)] cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold inline-flex items-center gap-2">
+                        {p.title}
+                        <span className="text-xs font-normal text-[var(--muted)] font-mono">
+                          {p.subtitle}
+                        </span>
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-3 text-[var(--muted)] shrink-0 ml-4">
+                      {p.github && (
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(p.github, "_blank", "noopener,noreferrer");
+                          }}
+                          className="hover:text-[var(--foreground)] transition-colors"
+                          role="link"
+                          tabIndex={0}
+                        >
+                          <GithubIcon size={16} />
+                        </span>
+                      )}
+                      {p.href && (
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(p.href, "_blank", "noopener,noreferrer");
+                          }}
+                          className="hover:text-[var(--foreground)] transition-colors"
+                          role="link"
+                          tabIndex={0}
+                        >
+                          <ExternalLink size={16} />
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-sm text-[var(--muted)] leading-relaxed mb-4">
+                    {p.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {p.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="text-xs px-2.5 py-1 rounded-full border border-[var(--border)] text-[var(--muted)] font-mono"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Experience */}
+        <section id="experience" className="mb-28 md:mb-36 scroll-mt-20">
+          <div className="flex items-end gap-6 mb-12">
+            <SectionNumber n="02" />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Internships, teaching, and technical roles.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            {EXPERIENCE.map((e) => (
+              <div
+                key={e.role + e.company}
+                className="group grid grid-cols-1 md:grid-cols-[200px_1fr] gap-1 md:gap-8 py-5 border-b border-[var(--border)] last:border-0"
+              >
+                <div className="text-sm text-[var(--muted)] font-mono shrink-0">
+                  {e.period}
+                </div>
                 <div>
-                  <h3 className="text-lg font-semibold inline-flex items-center gap-2">
-                    {p.title}
-                    <span className="text-xs font-normal text-[var(--muted)] font-mono">
-                      {p.subtitle}
+                  <h3 className="font-medium">
+                    {e.role}{" "}
+                    <span className="text-[var(--muted)] font-normal">
+                      · {e.company}
                     </span>
                   </h3>
-                </div>
-                <div className="flex items-center gap-3 text-[var(--muted)] shrink-0 ml-4">
-                  {p.github && (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[var(--foreground)] transition-colors"
-                    >
-                      <GithubIcon size={16} />
-                    </a>
-                  )}
-                  {p.href && (
-                    <a
-                      href={p.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[var(--foreground)] transition-colors"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
-                  )}
+                  <p className="text-sm text-[var(--muted)] mt-1.5 leading-relaxed">
+                    {e.description}
+                  </p>
                 </div>
               </div>
-              <p className="text-sm text-[var(--muted)] leading-relaxed mb-4">
-                {p.description}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {p.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="text-xs px-2.5 py-1 rounded-full border border-[var(--border)] text-[var(--muted)] font-mono"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Experience */}
-      <section id="experience" className="mb-28 md:mb-36 scroll-mt-20">
-        <div className="flex items-end gap-6 mb-12">
-          <SectionNumber n="02" />
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Internships, teaching, and technical roles.
-            </p>
+            ))}
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-1">
-          {EXPERIENCE.map((e) => (
-            <div
-              key={e.role + e.company}
-              className="group grid grid-cols-1 md:grid-cols-[200px_1fr] gap-1 md:gap-8 py-5 border-b border-[var(--border)] last:border-0"
-            >
-              <div className="text-sm text-[var(--muted)] font-mono shrink-0">
-                {e.period}
-              </div>
-              <div>
-                <h3 className="font-medium">
-                  {e.role}{" "}
-                  <span className="text-[var(--muted)] font-normal">
-                    · {e.company}
-                  </span>
+        {/* Skills */}
+        <section id="skills" className="mb-28 md:mb-36 scroll-mt-20">
+          <div className="flex items-end gap-6 mb-12">
+            <SectionNumber n="03" />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Skills</h2>
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Languages, frameworks, and tools I work with.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {Object.entries(SKILLS).map(([category, items]) => (
+              <div key={category}>
+                <h3 className="text-xs text-[var(--muted)] uppercase tracking-widest mb-4 font-mono">
+                  {category}
                 </h3>
-                <p className="text-sm text-[var(--muted)] mt-1.5 leading-relaxed">
-                  {e.description}
+                <div className="flex flex-wrap gap-2">
+                  {items.map((s) => (
+                    <span
+                      key={s}
+                      className="text-sm px-3 py-1.5 rounded-md bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Achievements */}
+        <section className="mb-28 md:mb-36">
+          <div className="flex items-end gap-6 mb-12">
+            <SectionNumber n="04" />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Recognition</h2>
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Competitions, awards, and academic standing.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "PROPELU x Apple HBCU Innovation Challenge",
+                detail:
+                  'Top 14 of 1,100 students. Presented at the Austin campus finals. Judges called it "the most futuristic idea presented."',
+              },
+              {
+                title: "Eli and Edythe Broad Foundation Scholar",
+                detail: "$20,000 unsolicited scholarship.",
+              },
+              {
+                title: "Dean's List",
+                detail:
+                  "Fall 2025 (4.00 GPA), Spring 2026 (3.80 GPA). Cumulative 3.90.",
+              },
+              {
+                title: "Nigerian Mathematical Olympiad",
+                detail:
+                  "Top performer at Air Force Secondary School Ikeja in the national competition.",
+              },
+            ].map((a) => (
+              <div
+                key={a.title}
+                className="border border-[var(--border)] rounded-lg p-5 bg-[var(--card)]"
+              >
+                <h3 className="font-medium text-sm mb-1.5">{a.title}</h3>
+                <p className="text-xs text-[var(--muted)] leading-relaxed">
+                  {a.detail}
                 </p>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Skills */}
-      <section id="skills" className="mb-28 md:mb-36 scroll-mt-20">
-        <div className="flex items-end gap-6 mb-12">
-          <SectionNumber n="03" />
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Skills</h2>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Languages, frameworks, and tools I work with.
-            </p>
+            ))}
           </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {Object.entries(SKILLS).map(([category, items]) => (
-            <div key={category}>
-              <h3 className="text-xs text-[var(--muted)] uppercase tracking-widest mb-4 font-mono">
-                {category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {items.map((s) => (
-                  <span
-                    key={s}
-                    className="text-sm px-3 py-1.5 rounded-md bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Achievements */}
-      <section className="mb-28 md:mb-36">
-        <div className="flex items-end gap-6 mb-12">
-          <SectionNumber n="04" />
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Recognition</h2>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Competitions, awards, and academic standing.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            {
-              title: "PROPELU x Apple HBCU Innovation Challenge",
-              detail:
-                'Top 14 of 1,100 students. Presented at the Austin campus finals. Judges called it "the most futuristic idea presented."',
-            },
-            {
-              title: "Eli and Edythe Broad Foundation Scholar",
-              detail: "$20,000 unsolicited scholarship.",
-            },
-            {
-              title: "Dean's List",
-              detail:
-                "Fall 2025 (4.00 GPA), Spring 2026 (3.80 GPA). Cumulative 3.90.",
-            },
-            {
-              title: "Nigerian Mathematical Olympiad",
-              detail:
-                "Top performer at Air Force Secondary School Ikeja in the national competition.",
-            },
-          ].map((a) => (
-            <div
-              key={a.title}
-              className="border border-[var(--border)] rounded-lg p-5 bg-[var(--card)]"
-            >
-              <h3 className="font-medium text-sm mb-1.5">{a.title}</h3>
-              <p className="text-xs text-[var(--muted)] leading-relaxed">
-                {a.detail}
+        {/* Contact */}
+        <section id="contact" className="mb-16 scroll-mt-20">
+          <div className="flex items-end gap-6 mb-12">
+            <SectionNumber n="05" />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Contact</h2>
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Open to internship opportunities and collaborations.
               </p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section id="contact" className="mb-16 scroll-mt-20">
-        <div className="flex items-end gap-6 mb-12">
-          <SectionNumber n="05" />
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Contact</h2>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Open to internship opportunities and collaborations.
-            </p>
           </div>
-        </div>
 
-        <div className="flex flex-wrap gap-4">
-          <a
-            href="mailto:alimceejay@gmail.com"
-            className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
-          >
-            <Mail size={16} /> alimceejay@gmail.com
-          </a>
-          <a
-            href="https://github.com/CeeJay1241"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
-          >
-            <GithubIcon size={16} /> GitHub
-            <ArrowUpRight size={12} />
-          </a>
-          <a
-            href="https://linkedin.com/in/chijioke-alim"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
-          >
-            <LinkedinIcon size={16} /> LinkedIn
-            <ArrowUpRight size={12} />
-          </a>
-        </div>
-      </section>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="mailto:alimceejay@gmail.com"
+              className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+            >
+              <Mail size={16} /> alimceejay@gmail.com
+            </a>
+            <a
+              href="https://github.com/CeeJay1241"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+            >
+              <GithubIcon size={16} /> GitHub
+              <ArrowUpRight size={12} />
+            </a>
+            <a
+              href="https://linkedin.com/in/chijioke-alim"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-[var(--border)] hover:border-[var(--muted)] rounded-md px-5 py-3 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+            >
+              <LinkedinIcon size={16} /> LinkedIn
+              <ArrowUpRight size={12} />
+            </a>
+          </div>
+        </section>
 
-      {/* Footer */}
-      <footer className="border-t border-[var(--border)] pt-8 pb-4 text-xs text-[var(--muted)] flex items-center justify-between">
-        <span>Chijioke Alim · {new Date().getFullYear()}</span>
-        <span className="font-mono">Howard University</span>
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="border-t border-[var(--border)] pt-8 pb-4 text-xs text-[var(--muted)] flex items-center justify-between">
+          <span>Chijioke Alim · {new Date().getFullYear()}</span>
+          <span className="font-mono">Howard University</span>
+        </footer>
+      </div>
+    </>
   );
 }
