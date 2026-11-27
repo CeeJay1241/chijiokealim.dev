@@ -68,7 +68,7 @@ const PROJECTS = [
     description:
       "Decomposes a 610-user by 9,742-movie rating matrix into 100 latent dimensions to predict ratings for unseen films. Pre-computed static JSON architecture eliminates the need for a Python backend. 60.4% Precision@10, 65.0% Recall@10.",
     tags: ["Python", "scikit-learn", "Next.js", "TypeScript", "Recharts"],
-    href: "https://movie-recomendation-system.vercel.app",
+    href: "https://cinematch.chijiokealim.dev",
     github: "https://github.com/CeeJay1241/Movie-Recomendation-System",
   },
   {
