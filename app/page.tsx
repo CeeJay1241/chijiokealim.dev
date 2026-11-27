@@ -54,6 +54,15 @@ const NAV_LINKS = [
 
 const PROJECTS = [
   {
+    title: "Team Standup Tracker",
+    subtitle: "Full-Stack Team Productivity App",
+    description:
+      "Daily standup logger for small teams with streak tracking, configurable deadlines, and a public demo mode. Built with real-time data from PostgreSQL and Prisma, with Clerk authentication for the admin dashboard.",
+    tags: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Clerk"],
+    href: "https://standup.chijiokealim.dev",
+    github: "https://github.com/CeeJay1241/team-standup-tracker",
+  },
+  {
     title: "CineMatch",
     subtitle: "SVD Collaborative Filtering Engine",
     description:
